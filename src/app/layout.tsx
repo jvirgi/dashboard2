@@ -2,7 +2,6 @@
 
 import './globals.css';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import KPIBar from '@/components/KPIBar';
 import ActiveFilterChips from '@/components/ActiveFilterChips';
 import CommandPalette from '@/components/UI/CommandPalette';
@@ -11,24 +10,7 @@ import SavedViewsBar from '@/components/SavedViewsBar';
 import { FilterProvider } from '@/lib/state';
 import ContextMenuOverlay from '@/components/UI/ContextMenu';
 import DrilldownDrawer from '@/components/UI/DrilldownDrawer';
-
-function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) root.classList.add('dark');
-    else root.classList.remove('dark');
-  }, [isDark]);
-  return (
-    <button
-      className="text-xs px-2 py-1 rounded-md border border-gray-200 hover:border-brand-300 hover:text-brand-700 dark:border-white/10 dark:hover:border-white/30"
-      onClick={() => setIsDark((d) => !d)}
-      title="Toggle theme"
-    >
-      {isDark ? 'Light' : 'Dark'}
-    </button>
-  );
-}
+import ThemeSelector from '@/components/UI/ThemeSelector';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -47,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link className="hover:text-brand-600" href="/market">Market Compare</Link>
                 <Link className="hover:text-brand-600" href="/product-trends">Product Trends</Link>
                 <Link className="hover:text-brand-600" href="/market-trends">Market Trends</Link>
-                <ThemeToggle />
+                <ThemeSelector />
               </nav>
             </div>
           </header>
