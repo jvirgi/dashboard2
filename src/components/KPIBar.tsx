@@ -6,19 +6,18 @@ import { applyFilters } from '@/lib/filters';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
 function Card({ title, value, delta, children }: { title: string; value: string; delta?: number; children?: React.ReactNode }) {
-  const deltaColor = delta === undefined ? 'text-gray-500' : delta >= 0 ? 'text-emerald-600' : 'text-rose-600';
-  const deltaSign = delta && delta > 0 ? '+' : '';
+  const hasDelta = typeof delta === 'number';
+  const deltaClass = !hasDelta ? '' : delta! >= 0 ? 'pill pill-pos' : 'pill pill-neg';
+  const deltaText = !hasDelta ? '' : `${delta! > 0 ? '+' : ''}${Math.round(delta! * 100)}%`;
   return (
-    <div className="card p-3">
-      <div className="text-[11px] uppercase text-gray-500 mb-1">{title}</div>
+    <div className="card card-sheen p-3">
+      <div className="text-[11px] uppercase text-gray-500 mb-2 tracking-wide">{title}</div>
       <div className="flex items-end justify-between gap-3">
         <div className="flex items-baseline gap-2">
-          <div className="text-xl font-semibold">{value}</div>
-          {delta !== undefined && (
-            <div className={`text-xs ${deltaColor}`}>{deltaSign}{Math.round(delta * 100)}%</div>
-          )}
+          <div className="text-2xl font-semibold numeric">{value}</div>
+          {hasDelta && <div className={deltaClass}>{deltaText}</div>}
         </div>
-        <div className="w-24 h-8">
+        <div className="w-28 h-8">
           {children}
         </div>
       </div>
@@ -69,17 +68,17 @@ export default function KPIBar() {
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
       <Card title="Review Volume" value={current.vol.toLocaleString()} delta={baselineDelta.vol}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={series}><Line type="monotone" dataKey="vol" stroke="#3b82f6" dot={false} /></LineChart>
+          <LineChart data={series}><Line type="monotone" dataKey="vol" stroke="#3b82f6" strokeWidth={2} dot={false} /></LineChart>
         </ResponsiveContainer>
       </Card>
       <Card title="Avg Rating" value={current.rating.toFixed(2)} delta={baselineDelta.rating}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={series}><Line type="monotone" dataKey="rating" stroke="#10b981" dot={false} /></LineChart>
+          <LineChart data={series}><Line type="monotone" dataKey="rating" stroke="#10b981" strokeWidth={2} dot={false} /></LineChart>
         </ResponsiveContainer>
       </Card>
       <Card title="Avg Sentiment" value={current.sentiment.toFixed(2)} delta={baselineDelta.sentiment}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={series}><Line type="monotone" dataKey="sentiment" stroke="#f59e0b" dot={false} /></LineChart>
+          <LineChart data={series}><Line type="monotone" dataKey="sentiment" stroke="#f59e0b" strokeWidth={2} dot={false} /></LineChart>
         </ResponsiveContainer>
       </Card>
     </div>

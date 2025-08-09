@@ -11,6 +11,7 @@ import ContextMenuOverlay from '@/components/UI/ContextMenu';
 import DrilldownDrawer from '@/components/UI/DrilldownDrawer';
 import Sidebar from '@/components/UI/Sidebar';
 import TopBar from '@/components/UI/TopBar';
+import FilterPanel from '@/components/FilterPanel';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,6 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <DrilldownDrawer />
           <div className="app-shell">
             <Sidebar />
+            <aside className="filters-pane p-4">
+              <FilterPanel />
+            </aside>
             <div>
               <TopBar />
               <main className="container-padded py-6 animate-fadeIn">

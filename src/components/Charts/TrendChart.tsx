@@ -1,6 +1,6 @@
 "use client";
 
-import { Line, LineChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Brush, ReferenceDot } from 'recharts';
+import { Line, LineChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Brush, ReferenceDot, Area, AreaChart } from 'recharts';
 import { useMemo } from 'react';
 import { useFilters } from '@/lib/state';
 import { applyFilters } from '@/lib/filters';
@@ -44,20 +44,27 @@ export default function TrendChart({ metric = 'volume' as 'volume' | 'avgRating'
     return { mean, std, outliers };
   }, [data, metric]);
 
+  const areaKey = metric === 'volume' ? 'volume' : metric === 'avgRating' ? 'avgRating' : 'avgSentiment';
+  const stroke = metric === 'volume' ? '#3b82f6' : metric === 'avgRating' ? '#10b981' : '#f59e0b';
+
   return (
-    <div className="card">
+    <div className="card card-sheen">
       <div className="card-header">Trend over time</div>
       <div className="card-body h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+          <AreaChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+            <defs>
+              <linearGradient id={`grad-${areaKey}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={stroke} stopOpacity={0.35} />
+                <stop offset="100%" stopColor={stroke} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="date" tick={{ fontSize: 12 }} />
             <YAxis />
-            <Tooltip />
+            <Tooltip contentStyle={{ borderRadius: 12, borderColor: '#e5e7eb' }} />
             <Legend />
-            {metric === 'volume' && <Line type="monotone" dataKey="volume" stroke="#60a5fa" dot={false} />}
-            {metric === 'avgRating' && <Line type="monotone" dataKey="avgRating" stroke="#34d399" dot={false} />}
-            {metric === 'avgSentiment' && <Line type="monotone" dataKey="avgSentiment" stroke="#f59e0b" dot={false} />}
+            <Area type="monotone" dataKey={areaKey} stroke={stroke} fill={`url(#grad-${areaKey})`} strokeWidth={2} />
             {data.map((d, i) => (
               meanStd.outliers.has(d.date) ? <ReferenceDot key={i} x={d.date} y={(metric === 'volume' ? d.volume : metric === 'avgRating' ? d.avgRating : d.avgSentiment)} r={4} fill="#ef4444" stroke="none" /> : null
             ))}
@@ -67,10 +74,10 @@ export default function TrendChart({ metric = 'volume' as 'volume' | 'avgRating'
               const end = data[range.endIndex]?.date;
               if (start && end) setDateRange(start, end);
             }} />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
         <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-          <button className="hover:text-brand-600" onClick={() => setDateRange(undefined, undefined)}>Clear date filter</button>
+          <button className="hover:brand-text" onClick={() => setDateRange(undefined, undefined)}>Clear date filter</button>
           {baselineFrom && baselineTo && <div>Baseline: {baselineFrom} → {baselineTo}</div>}
         </div>
       </div>
