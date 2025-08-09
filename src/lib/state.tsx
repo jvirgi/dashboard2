@@ -1,17 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
 import { DATASET } from './sampleData';
 import { DEFAULT_FILTERS, FilterState } from './filters';
+import { useUrlSync } from './urlState';
 
 export type ContextMenuItem = { label: string; onClick: () => void };
 export type ContextMenuState = { x: number; y: number; items: ContextMenuItem[] } | null;
 
 export type DrilldownState = { title: string; filtersPatch: Partial<FilterState> } | null;
 
+export type SavedView = { id: string; name: string; filters: FilterState };
+
 export type FilterContextType = {
   filters: FilterState;
   setFilters: (updater: (prev: FilterState) => FilterState) => void;
+  applyFiltersPatch: (patch: Partial<FilterState>) => void;
   resetFilters: () => void;
   dataset: typeof DATASET;
   toggleBrand: (brandId: string) => void;
@@ -26,18 +30,44 @@ export type FilterContextType = {
   drilldown: DrilldownState;
   openDrilldown: (d: DrilldownState) => void;
   closeDrilldown: () => void;
+  // Baseline
+  baselineBrandId?: string;
+  setBaselineBrandId: (id?: string) => void;
+  baselineFrom?: string;
+  baselineTo?: string;
+  setBaselineRange: (from?: string, to?: string) => void;
+  // Saved views
+  views: SavedView[];
+  saveView: (name: string) => void;
+  applyView: (id: string) => void;
+  deleteView: (id: string) => void;
 };
 
 const FilterContext = createContext<FilterContextType | null>(null);
+
+function loadViews(): SavedView[] {
+  if (typeof window === 'undefined') return [];
+  try { return JSON.parse(localStorage.getItem('voc_views') || '[]') as SavedView[]; } catch { return []; }
+}
 
 export function FilterProvider({ children }: { children: React.ReactNode }) {
   const [filters, setFiltersState] = useState<FilterState>({ ...DEFAULT_FILTERS });
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
   const [drilldown, setDrilldown] = useState<DrilldownState>(null);
+  const [baselineBrandId, setBaselineBrandId] = useState<string | undefined>(undefined);
+  const [baselineFrom, setBaselineFrom] = useState<string | undefined>(undefined);
+  const [baselineTo, setBaselineTo] = useState<string | undefined>(undefined);
+  const [views, setViews] = useState<SavedView[]>([]);
+
+  useEffect(() => setViews(loadViews()), []);
+
+  useUrlSync(filters, (patch) => setFiltersState((prev) => ({ ...prev, ...patch })));
 
   const setFilters = (updater: (prev: FilterState) => FilterState) => {
     setFiltersState((prev) => ({ ...updater(prev) }));
   };
+
+  const applyFiltersPatch = (patch: Partial<FilterState>) => setFiltersState((prev) => ({ ...prev, ...patch }));
 
   const resetFilters = () => setFiltersState({ ...DEFAULT_FILTERS });
 
@@ -69,10 +99,31 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
   const openDrilldown = (d: DrilldownState) => setDrilldown(d);
   const closeDrilldown = () => setDrilldown(null);
 
+  const setBaselineRange = (from?: string, to?: string) => { setBaselineFrom(from); setBaselineTo(to); };
+
+  const saveView = (name: string) => {
+    const id = `${Date.now()}`;
+    const next = [...views, { id, name, filters }];
+    setViews(next);
+    if (typeof window !== 'undefined') localStorage.setItem('voc_views', JSON.stringify(next));
+  };
+
+  const applyView = (id: string) => {
+    const v = views.find((x) => x.id === id);
+    if (v) setFiltersState({ ...v.filters });
+  };
+
+  const deleteView = (id: string) => {
+    const next = views.filter((v) => v.id !== id);
+    setViews(next);
+    if (typeof window !== 'undefined') localStorage.setItem('voc_views', JSON.stringify(next));
+  };
+
   const value = useMemo<FilterContextType>(
     () => ({
       filters,
       setFilters,
+      applyFiltersPatch,
       resetFilters,
       dataset: DATASET,
       toggleBrand,
@@ -86,8 +137,17 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
       drilldown,
       openDrilldown,
       closeDrilldown,
+      baselineBrandId,
+      setBaselineBrandId,
+      baselineFrom,
+      baselineTo,
+      setBaselineRange,
+      views,
+      saveView,
+      applyView,
+      deleteView,
     }),
-    [filters, contextMenu, drilldown]
+    [filters, contextMenu, drilldown, baselineBrandId, baselineFrom, baselineTo, views]
   );
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;

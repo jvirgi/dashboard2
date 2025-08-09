@@ -3,12 +3,9 @@
 import FilterPanel from '@/components/FilterPanel';
 import TrendChart from '@/components/Charts/TrendChart';
 import ReviewsTable from '@/components/ReviewsTable';
-import { FilterProvider } from '@/lib/state';
 import { useFilters } from '@/lib/state';
 import { useMemo } from 'react';
 import { applyFilters } from '@/lib/filters';
-import ContextMenuOverlay from '@/components/UI/ContextMenu';
-import DrilldownDrawer from '@/components/UI/DrilldownDrawer';
 
 function EmergingTopics() {
   const { dataset, filters } = useFilters();
@@ -59,28 +56,24 @@ function NewEntrants() {
 
 export default function MarketTrendsPage() {
   return (
-    <FilterProvider>
-      <ContextMenuOverlay />
-      <DrilldownDrawer />
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-4">
-          <FilterPanel />
-        </div>
-        <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <TrendChart metric="volume" />
-          <TrendChart metric="avgSentiment" />
-          <TrendChart metric="avgRating" />
-        </div>
-        <div className="lg:col-span-2">
-          <EmergingTopics />
-        </div>
-        <div className="lg:col-span-2">
-          <NewEntrants />
-        </div>
-        <div className="lg:col-span-4">
-          <ReviewsTable />
-        </div>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="lg:col-span-4">
+        <FilterPanel />
       </div>
-    </FilterProvider>
+      <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <TrendChart metric="volume" />
+        <TrendChart metric="avgSentiment" />
+        <TrendChart metric="avgRating" />
+      </div>
+      <div className="lg:col-span-2">
+        <EmergingTopics />
+      </div>
+      <div className="lg:col-span-2">
+        <NewEntrants />
+      </div>
+      <div className="lg:col-span-4">
+        <ReviewsTable />
+      </div>
+    </div>
   );
 }

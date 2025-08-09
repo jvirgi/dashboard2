@@ -15,7 +15,9 @@
     "recharts": "^2.10.3",
     "date-fns": "^3.6.0",
     "lodash": "^4.17.21",
-    "clsx": "^2.1.1"
+    "clsx": "^2.1.1",
+    "fuse.js": "^7.0.0",
+    "html-to-image": "^1.11.11"
   },
   "devDependencies": {
     "typescript": "5.5.3",
