@@ -7,6 +7,8 @@ import { FilterProvider } from '@/lib/state';
 import { useFilters } from '@/lib/state';
 import { useMemo } from 'react';
 import { applyFilters } from '@/lib/filters';
+import ContextMenuOverlay from '@/components/UI/ContextMenu';
+import DrilldownDrawer from '@/components/UI/DrilldownDrawer';
 
 function EmergingTopics() {
   const { dataset, filters } = useFilters();
@@ -58,6 +60,8 @@ function NewEntrants() {
 export default function MarketTrendsPage() {
   return (
     <FilterProvider>
+      <ContextMenuOverlay />
+      <DrilldownDrawer />
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-4">
           <FilterPanel />

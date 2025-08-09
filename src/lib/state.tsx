@@ -4,6 +4,11 @@ import React, { createContext, useContext, useMemo, useState } from 'react';
 import { DATASET } from './sampleData';
 import { DEFAULT_FILTERS, FilterState } from './filters';
 
+export type ContextMenuItem = { label: string; onClick: () => void };
+export type ContextMenuState = { x: number; y: number; items: ContextMenuItem[] } | null;
+
+export type DrilldownState = { title: string; filtersPatch: Partial<FilterState> } | null;
+
 export type FilterContextType = {
   filters: FilterState;
   setFilters: (updater: (prev: FilterState) => FilterState) => void;
@@ -14,12 +19,21 @@ export type FilterContextType = {
   toggleGeo: (geoId: string) => void;
   selectProductIds: (productIds: string[]) => void;
   setDateRange: (from?: string, to?: string) => void;
+  // UI overlay
+  contextMenu: ContextMenuState;
+  showContextMenu: (cm: ContextMenuState) => void;
+  hideContextMenu: () => void;
+  drilldown: DrilldownState;
+  openDrilldown: (d: DrilldownState) => void;
+  closeDrilldown: () => void;
 };
 
 const FilterContext = createContext<FilterContextType | null>(null);
 
 export function FilterProvider({ children }: { children: React.ReactNode }) {
   const [filters, setFiltersState] = useState<FilterState>({ ...DEFAULT_FILTERS });
+  const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
+  const [drilldown, setDrilldown] = useState<DrilldownState>(null);
 
   const setFilters = (updater: (prev: FilterState) => FilterState) => {
     setFiltersState((prev) => ({ ...updater(prev) }));
@@ -49,9 +63,31 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
 
   const setDateRange = (from?: string, to?: string) => setFilters((prev) => ({ ...prev, dateFrom: from, dateTo: to }));
 
+  const showContextMenu = (cm: ContextMenuState) => setContextMenu(cm);
+  const hideContextMenu = () => setContextMenu(null);
+
+  const openDrilldown = (d: DrilldownState) => setDrilldown(d);
+  const closeDrilldown = () => setDrilldown(null);
+
   const value = useMemo<FilterContextType>(
-    () => ({ filters, setFilters, resetFilters, dataset: DATASET, toggleBrand, toggleCategory, toggleGeo, selectProductIds, setDateRange }),
-    [filters]
+    () => ({
+      filters,
+      setFilters,
+      resetFilters,
+      dataset: DATASET,
+      toggleBrand,
+      toggleCategory,
+      toggleGeo,
+      selectProductIds,
+      setDateRange,
+      contextMenu,
+      showContextMenu,
+      hideContextMenu,
+      drilldown,
+      openDrilldown,
+      closeDrilldown,
+    }),
+    [filters, contextMenu, drilldown]
   );
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;

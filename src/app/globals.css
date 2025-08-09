@@ -13,7 +13,14 @@ html, body, #__next {
 
 body {
   color: rgb(var(--foreground));
-  background: rgb(var(--background));
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 60%);
+}
+
+.dark body {
+  background: radial-gradient(1200px 600px at 10% -10%, rgba(59,130,246,0.12), transparent),
+              radial-gradient(1000px 600px at 90% 10%, rgba(16,185,129,0.10), transparent),
+              #0b1220;
+  color: #e5e7eb;
 }
 
 /* Reusable utility classes */
@@ -22,13 +29,21 @@ body {
 }
 
 .card {
-  @apply bg-white rounded-xl shadow-sm ring-1 ring-gray-200;
+  @apply bg-white/70 backdrop-blur rounded-2xl shadow-soft ring-1 ring-gray-200;
+}
+.dark .card {
+  @apply bg-white/10 ring-white/10 shadow-elevated;
 }
 
 .card-header {
   @apply px-4 py-3 border-b border-gray-100 text-sm font-semibold text-gray-700;
 }
+.dark .card-header { @apply border-white/10 text-gray-200; }
 
 .card-body {
   @apply p-4;
 }
+
+/* Header glass */
+.header-glass { @apply bg-white/60 backdrop-blur border-b border-gray-100; }
+.dark .header-glass { @apply bg-white/10 border-white/10; }

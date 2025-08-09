@@ -4,10 +4,14 @@ import FilterPanel from '@/components/FilterPanel';
 import TrendChart from '@/components/Charts/TrendChart';
 import ReviewsTable from '@/components/ReviewsTable';
 import { FilterProvider } from '@/lib/state';
+import ContextMenuOverlay from '@/components/UI/ContextMenu';
+import DrilldownDrawer from '@/components/UI/DrilldownDrawer';
 
 export default function ProductTrendsPage() {
   return (
     <FilterProvider>
+      <ContextMenuOverlay />
+      <DrilldownDrawer />
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-4">
           <FilterPanel />

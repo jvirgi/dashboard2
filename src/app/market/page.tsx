@@ -6,10 +6,14 @@ import BrandCompare from '@/components/Charts/BrandCompare';
 import RatingDistribution from '@/components/Charts/RatingDistribution';
 import ReviewsTable from '@/components/ReviewsTable';
 import { FilterProvider } from '@/lib/state';
+import ContextMenuOverlay from '@/components/UI/ContextMenu';
+import DrilldownDrawer from '@/components/UI/DrilldownDrawer';
 
 export default function MarketPage() {
   return (
     <FilterProvider>
+      <ContextMenuOverlay />
+      <DrilldownDrawer />
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-4">
           <FilterPanel />

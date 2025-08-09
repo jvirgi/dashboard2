@@ -6,7 +6,7 @@ import { useFilters } from '@/lib/state';
 import { applyFilters } from '@/lib/filters';
 
 export default function BrandCompare() {
-  const { dataset, filters, toggleBrand } = useFilters();
+  const { dataset, filters, toggleBrand, showContextMenu, openDrilldown } = useFilters();
 
   const data = useMemo(() => {
     const facts = applyFilters(dataset, { ...filters, brandIds: [] });
@@ -32,9 +32,13 @@ export default function BrandCompare() {
         volume: v.volume,
         avgRating: ratingsByBrand[brandId].sum / ratingsByBrand[brandId].count,
         avgSentiment: ratingsByBrand[brandId].sent / ratingsByBrand[brandId].count,
+        selected: filters.brandIds.includes(brandId),
       }))
       .sort((a, b) => b.volume - a.volume);
   }, [dataset, filters]);
+
+  const barFill = (selected: boolean) => (selected ? '#2563eb' : '#93c5fd');
+  const barFill2 = (selected: boolean) => (selected ? '#10b981' : '#a7f3d0');
 
   return (
     <div className="card">
@@ -48,8 +52,47 @@ export default function BrandCompare() {
             <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
             <Tooltip />
             <Legend />
-            <Bar yAxisId="left" dataKey="volume" name="Review Volume" fill="#60a5fa" onClick={(d) => toggleBrand((d as any).brandId)} />
-            <Bar yAxisId="right" dataKey="avgRating" name="Avg Rating" fill="#34d399" onClick={(d) => toggleBrand((d as any).brandId)} />
+            <Bar yAxisId="left" dataKey="volume" name="Review Volume" fill="#60a5fa"
+              onClick={(d) => toggleBrand((d as any).brandId)}
+              onContextMenu={(d, index, e: any) => {
+                e.preventDefault();
+                const row = d as any;
+                showContextMenu({
+                  x: e.clientX,
+                  y: e.clientY,
+                  items: [
+                    { label: `Filter to ${row.brandName}`, onClick: () => toggleBrand(row.brandId) },
+                    { label: `Exclude ${row.brandName}`, onClick: () => {/* Exclude via setFilters could be added */} },
+                    { label: `Drill into ${row.brandName} reviews`, onClick: () => openDrilldown({ title: `${row.brandName} • reviews`, filtersPatch: { brandIds: [row.brandId] } }) },
+                  ],
+                });
+              }}
+              shape={(props: any) => {
+                const row = (props as any).payload;
+                return (
+                  <rect {...props} fill={barFill(row.selected)} rx={6} ry={6} />
+                );
+              }}
+            />
+            <Bar yAxisId="right" dataKey="avgRating" name="Avg Rating" fill="#34d399"
+              onClick={(d) => toggleBrand((d as any).brandId)}
+              onContextMenu={(d, index, e: any) => {
+                e.preventDefault();
+                const row = d as any;
+                showContextMenu({
+                  x: e.clientX,
+                  y: e.clientY,
+                  items: [
+                    { label: `Filter to ${row.brandName}`, onClick: () => toggleBrand(row.brandId) },
+                    { label: `Drill into ${row.brandName} reviews`, onClick: () => openDrilldown({ title: `${row.brandName} • reviews`, filtersPatch: { brandIds: [row.brandId] } }) },
+                  ],
+                });
+              }}
+              shape={(props: any) => {
+                const row = (props as any).payload;
+                return <rect {...props} fill={barFill2(row.selected)} rx={6} ry={6} />;
+              }}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
