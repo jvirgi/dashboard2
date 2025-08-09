@@ -3,13 +3,36 @@
 @tailwind utilities;
 
 :root {
-  --background: 255 255 255;
-  --foreground: 15 23 42; /* slate-900 for higher contrast */
-  --brand: 59 130 246;
-  --accent: 139 92 246;
+  /* Text */
+  --foreground: 15 23 42; /* slate-900 */
+  --foreground-muted: 71 85 105; /* slate-600 */
+  --foreground-subtle: 100 116 139; /* slate-500 */
+
+  /* Brand */
+  --brand: 59 130 246; /* classic blue */
+  --accent: 139 92 246; /* violet */
+
+  /* Roles (AA/CB safe approximations) */
+  --positive: 16 185 129; /* emerald */
+  --warning: 245 158 11; /* amber */
+  --negative: 239 68 68; /* rose */
+
+  /* Surfaces */
+  --surface-0: 255 255 255; /* white */
+  --surface-1: 250 251 253; /* subtle off white */
+  --surface-2: 244 246 248; /* section bg */
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* Shadows */
+  --shadow-soft: 0 6px 24px rgba(0,0,0,0.06);
+  --shadow-elevated: 0 14px 48px rgba(0,0,0,0.18);
 }
 
-/* Theme variants */
+/* Theme variants via data-theme */
 :root[data-theme="classic"] { --brand: 59 130 246; --accent: 139 92 246; }
 :root[data-theme="ocean"]   { --brand: 14 165 233; --accent: 20 184 166; }
 :root[data-theme="emerald"] { --brand: 16 185 129; --accent: 5 150 105; }
@@ -18,10 +41,7 @@
 
 html, body, #__next { height: 100%; }
 
-body {
-  color: rgb(var(--foreground));
-  background: #ffffff;
-}
+body { color: rgb(var(--foreground)); background: rgb(var(--surface-1)); }
 
 .dark body {
   background: radial-gradient(1200px 600px at 10% -10%, rgb(var(--brand) / 0.10), transparent),
@@ -32,8 +52,19 @@ body {
 
 .container-padded { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
 
-.card { @apply bg-white/90 backdrop-blur rounded-2xl shadow-soft ring-1 ring-gray-200; }
-.dark .card { @apply bg-white/10 ring-white/10 shadow-elevated; }
+.card {
+  background-color: rgb(var(--surface-0) / 0.98);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  backdrop-filter: saturate(120%) blur(6px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  @apply ring-1 ring-gray-200;
+}
+.dark .card {
+  background-color: rgb(255 255 255 / 0.08);
+  @apply ring-white/10;
+  box-shadow: var(--shadow-elevated);
+}
 
 .card-header { @apply px-4 py-3 border-b border-gray-100 text-sm font-semibold text-gray-900; }
 .dark .card-header { @apply border-white/10 text-gray-100; }
@@ -43,18 +74,27 @@ body {
 .header-glass { @apply bg-white/90 backdrop-blur border-b border-gray-100; }
 .dark .header-glass { @apply bg-white/10 border-white/10; }
 
-/* Higher-contrast buttons */
-.btn { @apply px-2 py-1 rounded-md border text-xs; }
+/* Buttons */
+.btn { @apply inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border text-xs; }
 .btn-ghost { @apply border-gray-300 hover:border-gray-400; }
+.btn-primary { color: white; background-color: rgb(var(--brand)); border-color: rgb(var(--brand)); }
+.btn-primary:hover { filter: brightness(0.95); }
 
-/* Brand utilities using CSS variables */
+/* Brand utilities */
 .brand-text { color: rgb(var(--brand)); }
 .brand-bg { background-color: rgb(var(--brand)); }
 .brand-border { border-color: rgb(var(--brand)); }
 .brand-ring { box-shadow: 0 0 0 3px rgb(var(--brand) / 0.25); }
 .brand-gradient { background-image: linear-gradient(135deg, rgb(var(--brand)), rgb(var(--accent))); }
 
-/* Hover variants for custom utilities */
-.hover\:brand-text:hover { color: rgb(var(--brand)); }
-.hover\:brand-border:hover { border-color: rgb(var(--brand)); }
-.hover\:brand-bg:hover { background-color: rgb(var(--brand)); }
+/* Sidebar */
+.app-shell { display: grid; grid-template-columns: 64px 1fr; }
+.app-rail { @apply sticky top-0 h-screen; background: rgb(var(--surface-0)); border-right: 1px solid rgba(0,0,0,0.06); }
+.dark .app-rail { background: rgba(255,255,255,0.06); border-right-color: rgba(255,255,255,0.12); }
+.rail-item { @apply w-10 h-10 rounded-lg flex items-center justify-center; }
+.rail-item:hover { background-color: rgb(var(--brand) / 0.08); }
+.rail-item.active { background-color: rgb(var(--brand) / 0.14); color: rgb(var(--brand)); }
+
+/* Topbar */
+.topbar { @apply sticky top-0 z-30; background: rgb(var(--surface-0) / 0.9); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(0,0,0,0.06); }
+.dark .topbar { background: rgba(255,255,255,0.06); border-bottom-color: rgba(255,255,255,0.12); }

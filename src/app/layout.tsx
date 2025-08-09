@@ -1,7 +1,6 @@
 "use client";
 
 import './globals.css';
-import Link from 'next/link';
 import KPIBar from '@/components/KPIBar';
 import ActiveFilterChips from '@/components/ActiveFilterChips';
 import CommandPalette from '@/components/UI/CommandPalette';
@@ -10,36 +9,29 @@ import SavedViewsBar from '@/components/SavedViewsBar';
 import { FilterProvider } from '@/lib/state';
 import ContextMenuOverlay from '@/components/UI/ContextMenu';
 import DrilldownDrawer from '@/components/UI/DrilldownDrawer';
-import ThemeSelector from '@/components/UI/ThemeSelector';
+import Sidebar from '@/components/UI/Sidebar';
+import TopBar from '@/components/UI/TopBar';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-white text-slate-900 dark:bg-transparent dark:text-slate-100">
+      <body className="min-h-screen bg-[color:rgb(var(--surface-1))] text-slate-900 dark:bg-transparent dark:text-slate-100">
         <FilterProvider>
           <ContextMenuOverlay />
           <DrilldownDrawer />
-          <header className="sticky top-0 z-40 header-glass">
-            <div className="container-padded flex items-center justify-between h-14">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg brand-gradient" />
-                <span className="font-semibold">VoC Analytics</span>
-              </div>
-              <nav className="flex items-center gap-4 text-sm">
-                <Link className="hover:brand-text" href="/market">Market Compare</Link>
-                <Link className="hover:brand-text" href="/product-trends">Product Trends</Link>
-                <Link className="hover:brand-text" href="/market-trends">Market Trends</Link>
-                <ThemeSelector />
-              </nav>
+          <div className="app-shell">
+            <Sidebar />
+            <div>
+              <TopBar />
+              <main className="container-padded py-6 animate-fadeIn">
+                <KPIBar />
+                <BaselineControls />
+                <SavedViewsBar />
+                <ActiveFilterChips />
+                {children}
+              </main>
             </div>
-          </header>
-          <main className="container-padded py-6 animate-fadeIn">
-            <KPIBar />
-            <BaselineControls />
-            <SavedViewsBar />
-            <ActiveFilterChips />
-            {children}
-          </main>
+          </div>
           <CommandPalette />
         </FilterProvider>
       </body>
