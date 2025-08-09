@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 255 255 255;
+  --foreground: 17 24 39;
+}
+
+html, body, #__next {
+  height: 100%;
+}
+
+body {
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
+}
+
+/* Reusable utility classes */
+.container-padded {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-sm ring-1 ring-gray-200;
+}
+
+.card-header {
+  @apply px-4 py-3 border-b border-gray-100 text-sm font-semibold text-gray-700;
+}
+
+.card-body {
+  @apply p-4;
+}
